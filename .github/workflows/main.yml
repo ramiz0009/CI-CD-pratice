@@ -17,8 +17,24 @@ jobs:
       uses: appleboy/scp-action@v1
           with:
               host: ${{ secrets.EC2_HOST }}
-              username:${{ secrets.EC2_USER_NAME }}
-              password: ${{ secrets.EC2_SECRETS }}
+              username: ${{ secrets.EC2_USERNAME }}
+              password: ${{ secrets.EC2_SSH_KEY }}
               port: 22
-              script: whoami
+              source: ./
+              target: ./
+
+       - name: Copy Files to var/www/html
+         uses: appleboy/ssh-action@v1
+         host: ${{ secrets.EC2_HOST }}
+         username: ${{ secrets.EC2_USERNAME }}
+         password: ${{ secrets.EC2_SSH_KEY }}
+         port: 22
+         script:
+              ls -al
+              whoami
+              sudo cp -r + /var/www/html
+              sudo systemctl restart nginx
+              
+              
+              
       
