@@ -35,5 +35,5 @@ jobs:
           whoami
           pwd
           sudo cp -r * /var/www/html
-          sudo systemctl restart nginx
+          sudo systemctl restart nginx 
           
