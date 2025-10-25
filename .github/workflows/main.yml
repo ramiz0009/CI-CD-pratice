@@ -7,41 +7,33 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted-runner1
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v5
 
     - name: Copy code to EC2
-      uses: appleboy/scp-action@v0.1.3
+      uses: appleboy/scp-action@v1
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
-        source: "./"
-        target: "/home/ubuntu/"
-
-    - name: Deploy to web directory and restart nginx
-      uses: appleboy/ssh-action@v1.0.3
+        source: ./
+        target: ./
+        
+    - name: Copy files to /var/www/html
+      uses: appleboy/ssh-action@v1
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         port: 22
         script: |
-          echo "Current directory and files:"
           ls -al
-          echo "Current user:"
           whoami
-          echo "Copying files to web directory..."
-          sudo cp -r /home/ubuntu/* /var/www/html/
-          echo "Setting proper permissions..."
-          sudo chown -R www-data:www-data /var/www/html
-          sudo chmod -R 755 /var/www/html
-          echo "Testing nginx configuration..."
-          sudo nginx -t
-          echo "Restarting nginx..."
+          pwd
+          sudo cp -r * /var/www/html
           sudo systemctl restart nginx
-          echo "Deployment completed successfully!"
+          
